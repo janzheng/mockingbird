@@ -2,6 +2,23 @@
 
 This module provides search functionality using Groq's Compound system, which integrates GPT-OSS 120B and Llama 4 models with external tools like web search, code execution, and more.
 
+## 🎯 Quick Start: Accurate Academic Paper Search
+
+For **100% accurate** academic paper metadata, use the `accurate-papers.js` module:
+
+```javascript
+import { searchAcademicPapers } from './core/search/accurate-papers.js';
+
+const papers = await searchAcademicPapers(
+  "CRISPR gene editing papers from 2025"
+);
+
+// Returns array with full titles, authors, dates, journals, DOIs, abstracts
+// All data scraped directly from webpages - zero hallucination risk!
+```
+
+See the [Accurate Papers](#accurate-academic-papers) section below for details.
+
 ## Setup
 
 Make sure you have a `GROQ_API_KEY` environment variable set in your `.env` file:
@@ -48,6 +65,33 @@ const result = await searchWithCompound("Find the latest news about AI", {
   system: "You are a helpful research assistant focused on AI news."
 });
 ```
+
+### Search Settings (Domain Restrictions)
+
+Restrict searches to specific domains to improve accuracy and reduce hallucinations:
+
+```javascript
+import { searchWithCompound } from './core/search/compound.js';
+
+const result = await searchWithCompound("Find recent phage therapy papers", {
+  temperature: 0.1,
+  search_settings: {
+    include_domains: [
+      "pubmed.ncbi.nlm.nih.gov",
+      "nature.com",
+      "science.org",
+      "*.edu"  // All educational institutions
+    ]
+  }
+});
+```
+
+**Available search_settings options:**
+- `include_domains`: Array of domains to restrict search to (supports wildcards like `*.edu`)
+- `exclude_domains`: Array of domains to exclude from search
+- `country`: Country to restrict search to (e.g., "united states")
+
+This is particularly useful for academic research, fact-checking, and reducing hallucinations.
 
 ### Streaming Response
 
@@ -133,6 +177,10 @@ Main function that returns the full Groq API response object.
   - `stream` (boolean): Whether to stream the response
   - `response_format` (object): Response format configuration
   - `system` (string): System prompt to guide the model
+  - `search_settings` (object): Search behavior customization
+    - `include_domains` (array): Domains to restrict search to (e.g., `["*.edu", "nature.com"]`)
+    - `exclude_domains` (array): Domains to exclude from search
+    - `country` (string): Country to restrict search to
 
 **Returns:** Promise<Object> - Full response object including:
 - `choices[0].message.content` - The response text
@@ -193,6 +241,195 @@ Built-in tools have separate costs:
 2. Consider implementing Llama Guard for input filtering
 3. Deploy with appropriate safeguards for specialized domains
 4. Note: Not HIPAA compliant - don't use for protected health information
+
+## Reducing Hallucinations
+
+Groq Compound may hallucinate (generate plausible but incorrect information), especially for:
+- Recent publications or events
+- Specific citations or references
+- Detailed factual information
+
+**Strategies to reduce hallucinations:**
+
+### 1. Use Low Temperature
+```javascript
+temperature: 0.1  // For factual tasks (0.1-0.3)
+temperature: 0.7  // For creative tasks only
+```
+
+### 2. Restrict Search Domains
+```javascript
+search_settings: {
+  include_domains: ["nature.com", "science.org", "*.edu"]
+}
+```
+
+### 3. Two-Step RAG Approach
+```javascript
+// Step 1: Retrieve raw information
+const searchResults = await searchWithCompound(query, {
+  system: "Find information. Do NOT make up facts. Include URLs.",
+  temperature: 0.1
+});
+
+// Step 2: Format and verify
+const formatted = await searchWithCompound(
+  `Format these search results: ${searchResults.choices[0].message.content}`,
+  {
+    system: "Mark any unverified information. Be transparent about limitations.",
+    temperature: 0.1
+  }
+);
+```
+
+### 4. Explicit Instructions
+```javascript
+system: `Find actual papers with URLs. 
+Do NOT make up papers or citations. 
+If you cannot find something, say so explicitly.
+Include source URLs for everything you mention.`
+```
+
+### 5. Verify URLs in Results
+```javascript
+const result = await searchWithCompound(query);
+const text = result.choices[0]?.message?.content;
+
+// Extract URLs
+const urls = text.match(/https?:\/\/[^\s\)]+/g) || [];
+
+// Verify each URL
+for (const url of urls) {
+  const response = await fetch(url, { method: 'HEAD' });
+  console.log(`${url}: ${response.ok ? '✅' : '❌'}`);
+}
+```
+
+### 6. Check Tool Calls
+```javascript
+const result = await searchWithCompound(query);
+
+// See what sources were actually accessed
+if (result.choices[0]?.message?.tool_calls) {
+  console.log("Tools used:", result.choices[0].message.tool_calls);
+}
+```
+
+**See `/experiments/README.md` for complete examples of anti-hallucination implementations.**
+
+## Accurate Academic Papers
+
+The `accurate-papers.js` module provides a better approach for academic paper searches with 100% accurate metadata.
+
+### Why Use This?
+
+**Problem:** LLMs often hallucinate or truncate paper metadata (titles, dates, journals, authors).
+
+**Solution:** Use LLM only to find URLs, then scrape real metadata from webpages.
+
+### Basic Usage
+
+```javascript
+import { searchAcademicPapers, formatPapersForConsole } from './core/search/accurate-papers.js';
+
+const papers = await searchAcademicPapers(
+  "machine learning papers from NeurIPS 2024"
+);
+
+console.log(formatPapersForConsole(papers));
+```
+
+### Advanced Options
+
+```javascript
+const papers = await searchAcademicPapers(
+  "climate change research published in Nature 2025",
+  {
+    domains: ["nature.com", "science.org"],  // Restrict to specific domains
+    maxPapers: 10,                           // Limit results
+    includeAbstracts: true,                  // Include abstracts
+    maxAuthors: 5,                           // Max authors per paper
+    onProgress: (progress) => {              // Progress callback
+      console.log(progress.message);
+    }
+  }
+);
+```
+
+### What You Get
+
+Each paper object contains:
+- `title` - Full, untruncated title
+- `authors` - Array of author names
+- `journal` - Journal name
+- `date` - Publication date (YYYY/MM/DD)
+- `dateFormatted` - Readable date (e.g., "16 Oct 2025")
+- `doi` - DOI identifier
+- `abstract` - Full abstract text
+- `url` - Source URL
+
+All data is extracted from standard citation meta tags (`citation_title`, `citation_author`, etc.).
+
+### Formatting Output
+
+```javascript
+// Console output
+const consoleOutput = formatPapersForConsole(papers);
+console.log(consoleOutput);
+
+// JSON
+const json = formatPapersAsJson(papers, pretty=true);
+
+// Markdown
+const markdown = formatPapersAsMarkdown(papers);
+```
+
+### How It Works
+
+1. Uses Groq Compound to search and find paper URLs (with domain restrictions)
+2. Fetches each webpage's HTML
+3. Extracts metadata from standardized meta tags:
+   - `<meta name="citation_title" content="...">` 
+   - `<meta name="citation_author" content="...">` (multiple)
+   - `<meta name="citation_publication_date" content="...">`
+   - `<meta name="citation_journal_title" content="...">`
+   - `<meta name="citation_doi" content="...">`
+   - `<meta name="citation_abstract" content="...">`
+
+These tags are standardized across academic publishers (Nature, Science, MDPI, etc.).
+
+### Advantages
+
+- ✅ **100% accurate** - data comes directly from publisher's webpage
+- ✅ **Complete information** - full titles, all authors, abstracts
+- ✅ **No hallucinations** - LLM only finds URLs, not metadata
+- ✅ **Verifiable** - every data point traceable to source
+- ✅ **Cost effective** - uses fewer tokens (LLM only for URL discovery)
+
+### Example
+
+```javascript
+import { searchAcademicPapers } from './core/search/accurate-papers.js';
+
+const papers = await searchAcademicPapers(
+  "phage therapy papers published in October 2025",
+  {
+    maxPapers: 5,
+    onProgress: (p) => console.log(p.message)
+  }
+);
+
+// Each paper has complete, accurate metadata
+papers.forEach(paper => {
+  console.log(paper.title);           // Full title
+  console.log(paper.authors.join(', ')); // All authors
+  console.log(paper.journal);         // Exact journal name
+  console.log(paper.dateFormatted);   // Readable date
+  console.log(`https://doi.org/${paper.doi}`); // Verified DOI
+});
+```
+
+See `/experiments/SOLUTION.md` for detailed explanation of this approach.
 
 ## Example: Search Endpoint
 

@@ -1,7 +1,15 @@
 {
   "tasks": {
     "serve": "deno serve --port 9990 --allow-sys --allow-read --allow-import --allow-env --allow-write --allow-net --reload=https://esm.town ./main.js",
-    "search": "deno run --allow-env --allow-net --allow-read ./core/search/test.js"
+    "search": "deno run --allow-env --allow-net --allow-read ./core/search/test.js",
+    "ex:phage-therapy": "deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-papers.js",
+    "ex:phage-therapy-improved": "deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-papers-improved.js",
+    "ex:phage-therapy-verified": "deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-verified.js",
+    "ex:phage-therapy-debug": "deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-debug.js",
+    "ex:verify-urls": "deno run --allow-env --allow-net --allow-read ./experiments/verify-url-content.js",
+    "ex:phage-therapy-urls-only": "deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-urls-only.js",
+    "ex:accurate-search": "deno run --allow-env --allow-net --allow-read ./experiments/example-accurate-search.js",
+    "ex:inspect-compound": "deno run --allow-env --allow-net --allow-read ./experiments/inspect-compound-output.js"
   },
   "$schema": "https://raw.githubusercontent.com/denoland/deno/98f62cee78e85bfc47c62ed703777c6bc8794f1c/cli/schemas/config-file.v1.json",
   "lock": false,

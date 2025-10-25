@@ -14,6 +14,10 @@ import Groq from "npm:groq-sdk";
  * @param {boolean} options.stream - Whether to stream the response
  * @param {Object} options.response_format - Response format configuration
  * @param {string} options.system - System prompt to guide the model
+ * @param {Object} options.search_settings - Search behavior customization
+ * @param {Array<string>} options.search_settings.include_domains - Domains to restrict search to
+ * @param {Array<string>} options.search_settings.exclude_domains - Domains to exclude from search
+ * @param {string} options.search_settings.country - Country to restrict search to
  * @returns {Promise<Object>} - Full response object from Groq API
  */
 export async function searchWithCompound(query, options = {}) {
@@ -36,6 +40,7 @@ export async function searchWithCompound(query, options = {}) {
     ...(options.top_p !== undefined && { top_p: options.top_p }),
     ...(options.stream !== undefined && { stream: options.stream }),
     ...(options.response_format !== undefined && { response_format: options.response_format }),
+    ...(options.search_settings !== undefined && { search_settings: options.search_settings }),
   };
 
   try {
