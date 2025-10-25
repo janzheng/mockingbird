@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mockingbird</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body, * {
+      font-family: 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div x-data="{ message: 'Hello from Mockingbird!', count: 0 }" class="bg-white rounded-lg shadow-lg p-8 max-w-md">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4" x-text="message"></h1>
+    <div class="space-y-4">
+      <div class="flex items-center gap-4">
+        <button 
+          @click="count++" 
+          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Click me
+        </button>
+        <span class="text-gray-700">Count: <span x-text="count" class="font-bold"></span></span>
+      </div>
+      <input 
+        type="text" 
+        x-model="message" 
+        placeholder="Edit message..." 
+        class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      />
+      </div>
+  </div>
+</body>
+</html>
