@@ -1,7 +1,13 @@
 {
   "tasks": {
     "serve": "deno serve --port 9990 --allow-sys --allow-read --allow-import --allow-env --allow-write --allow-net --reload=https://esm.town ./main.js",
-    "search": "deno run --allow-env --allow-net --allow-read ./core/search/test.js",
+    "search": "deno run --allow-env --allow-net --allow-read ./core/search/groq-compound/test.js",
+    "search:tavily": "deno run --allow-env --allow-net --allow-read ./core/search/tavily/test.js",
+    "search:jina": "deno run --allow-env --allow-net --allow-read ./core/search/jina/test.js",
+    "search:exa": "deno run --allow-env --allow-net --allow-read ./core/search/exa-search/test.js",
+    "search:exa-r": "deno run --allow-env --allow-net --allow-read ./core/search/exa-research/test.js",
+    "scrape:tavily": "deno run --allow-env --allow-net --allow-read ./core/scrape/tavily/test.js",
+    "scrape:jina": "deno run --allow-env --allow-net --allow-read ./core/scrape/jina/test.js",
     "ex:phage-therapy": "deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-papers.js",
     "ex:phage-therapy-improved": "deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-papers-improved.js",
     "ex:phage-therapy-verified": "deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-verified.js",
