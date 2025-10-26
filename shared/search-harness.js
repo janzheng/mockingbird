@@ -169,24 +169,45 @@ export async function search(searchQuery) {
       }
 
       case 'compound': {
-        rawResponse = await providerModule.searchWithCompound(query, options);
-        // Compound search returns text-based results, wrap in a single result
+        // Get the full response first
+        const rawResponse = await providerModule.searchWithCompound(query, options);
+        
+        // Extract the AI-generated content
+        const text = rawResponse.choices?.[0]?.message?.content || '';
+        
+        // Extract web sources from executed_tools
+        const executedTools = rawResponse.choices?.[0]?.message?.executed_tools || [];
+        let allResults = [];
+        
+        // Find search tool results
+        for (const tool of executedTools) {
+          if (tool.type === 'search' && tool.search_results?.results) {
+            const searchResults = tool.search_results.results.map((source) => ({
+              id: crypto.randomUUID(),
+              title: source.title || 'Untitled',
+              url: source.url || '',
+              snippet: source.content || '',
+              content: source.content || '',
+              source: 'compound',
+              score: source.score || 0,
+              publishedDate: new Date().toISOString(),
+              metadata: source,
+            }));
+            allResults = allResults.concat(searchResults);
+          }
+        }
+        
         return createSearchResponse({
           success: true,
           query,
           provider,
-          results: [{
-            id: crypto.randomUUID(),
-            title: query,
-            url: "",
-            snippet: rawResponse.text || rawResponse,
-            content: rawResponse.text || rawResponse,
-            source: provider,
-            score: 1,
-            publishedDate: new Date().toISOString(),
-            metadata: {},
-          }],
-          answer: rawResponse.text || rawResponse,
+          results: allResults, // Web sources from the search tool
+          answer: text, // The AI-generated comprehensive answer
+          metadata: {
+            model: rawResponse.model,
+            usage: rawResponse.usage,
+            toolsUsed: executedTools.map(t => t.type),
+          },
         });
       }
 

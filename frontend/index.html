@@ -3,35 +3,436 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mockingbird</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐓</text></svg>">
+  <title>Mockingbird - News Search</title>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body, * {
       font-family: 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: #f6f6ef;
+      color: #000;
+    }
+    
+    .header {
+      background: #ff6600;
+      padding: 2px;
+    }
+    
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 8px;
+    }
+    
+    .logo {
+      border: 1px solid #fff;
+      padding: 2px 4px;
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    
+    .header-title {
+      color: #000;
+      font-weight: bold;
+      font-size: 13px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 10px;
+      background: #f6f6ef;
+    }
+    
+    .search-box {
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ff6600;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      font-family: 'Menlo', monospace;
+    }
+    
+    .search-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      align-items: center;
+    }
+    
+    .search-button {
+      background: #ff6600;
+      color: #fff;
+      border: 2px solid #ff6600;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: 'Menlo', monospace;
+    }
+    
+    .search-button:hover {
+      background: #ff7700;
+    }
+    
+    .search-button:disabled {
+      background: #ccc;
+      border: 2px solid #ccc;
+      cursor: not-allowed;
+    }
+    
+    .provider-select {
+      padding: 6px;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      font-family: 'Menlo', monospace;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #828282;
+      font-size: 13px;
+    }
+    
+    .error {
+      background: #fff;
+      border: 1px solid #f00;
+      padding: 10px;
+      margin-bottom: 10px;
+      color: #f00;
+      font-size: 13px;
+    }
+    
+    .answer-box {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 3px solid #ff6600;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .answer-title {
+      font-weight: bold;
+      color: #ff6600;
+      margin-bottom: 10px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .answer-content {
+      color: #000;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .results-list {
+      background: #f6f6ef;
+    }
+    
+    .result-item {
+      padding: 4px 0;
+      line-height: 1.4;
+    }
+    
+    .result-title {
+      font-size: 13px;
+    }
+    
+    .result-title a {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .result-title a:visited {
+      color: #828282;
+    }
+    
+    .result-title a:hover {
+      text-decoration: underline;
+    }
+    
+    .result-meta {
+      font-size: 11px;
+      color: #828282;
+      padding-left: 20px;
+    }
+    
+    .result-meta a {
+      color: #828282;
+      text-decoration: none;
+    }
+    
+    .result-meta a:hover {
+      text-decoration: underline;
+    }
+    
+    .result-snippet {
+      font-size: 12px;
+      color: #555;
+      padding-left: 20px;
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+    
+    .result-number {
+      color: #828282;
+      font-size: 11px;
+      display: inline-block;
+      width: 15px;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 30px;
+      color: #828282;
+      font-size: 13px;
     }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-  <div x-data="{ message: 'Hello from Mockingbird!', count: 0 }" class="bg-white rounded-lg shadow-lg p-8 max-w-md">
-    <h1 class="text-2xl font-bold text-gray-800 mb-4" x-text="message"></h1>
-    <div class="space-y-4">
-      <div class="flex items-center gap-4">
-        <button 
-          @click="count++" 
-          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Click me
-        </button>
-        <span class="text-gray-700">Count: <span x-text="count" class="font-bold"></span></span>
-      </div>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">M</div>
+      <span class="header-title">Mockingbird</span>
+      <span style="color: #000; font-size: 11px;">Search & News Monitoring</span>
+    </div>
+  </div>
+
+  <div class="container" x-data="searchApp()">
+    <!-- Search Box -->
+    <div class="search-box">
       <input 
         type="text" 
-        x-model="message" 
-        placeholder="Edit message..." 
-        class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        class="search-input"
+        x-model="query"
+        @keyup.enter="executeSearch()"
+        placeholder="Search for news, articles, or any topic..."
       />
+      <div class="search-controls">
+        <button 
+          class="search-button" 
+          @click="executeSearch()"
+          :disabled="loading || !query.trim()"
+          x-text="loading ? 'Searching...' : 'Search'"
+        ></button>
+        <select class="provider-select" x-model="provider">
+          <option value="compound">Groq Compound (AI)</option>
+          <option value="tavily">Tavily</option>
+          <option value="exa">Exa</option>
+          <option value="jina">Jina</option>
+        </select>
+        <label style="font-size: 11px; color: #828282;">
+          <input type="checkbox" x-model="includeAnswer" style="margin-right: 4px;">
+          Include AI Answer
+        </label>
       </div>
+    </div>
+
+    <!-- Error Message -->
+    <div x-show="error" class="error" x-text="error"></div>
+
+    <!-- Loading State -->
+    <div x-show="loading" class="loading">
+      Searching...
+    </div>
+
+    <!-- AI Generated Answer -->
+    <div x-show="!loading && answer" class="answer-box">
+      <div class="answer-title">AI Summary</div>
+      <div class="answer-content" x-html="formatAnswer(answer)"></div>
+    </div>
+
+    <!-- Search Results -->
+    <div x-show="!loading && results.length > 0" class="results-list">
+      <template x-for="(result, index) in results" :key="result.id">
+        <div class="result-item">
+          <div class="result-title">
+            <span class="result-number" x-text="(index + 1) + '.'"></span>
+            <template x-if="result.url">
+              <a :href="result.url" target="_blank" rel="noopener" x-text="result.title || result.url"></a>
+            </template>
+            <template x-if="!result.url">
+              <span x-text="result.title"></span>
+            </template>
+          </div>
+          <div class="result-meta">
+            <span x-text="formatDate(result.publishedDate)"></span>
+            <span> | </span>
+            <span x-text="result.source"></span>
+            <template x-if="result.score > 0">
+              <span> | score: </span>
+            </template>
+            <template x-if="result.score > 0">
+              <span x-text="result.score.toFixed(2)"></span>
+            </template>
+            <template x-if="result.url">
+              <span> | </span>
+            </template>
+            <template x-if="result.url">
+              <a :href="result.url" target="_blank" rel="noopener" x-text="getDomain(result.url)"></a>
+            </template>
+          </div>
+          <div x-show="result.snippet" class="result-snippet" x-text="result.snippet"></div>
+        </div>
+      </template>
+    </div>
+
+    <!-- No Results (but have answer) -->
+    <div x-show="!loading && searched && results.length === 0 && answer && !error" class="no-results">
+      <span style="color: #ff6600;">ℹ️</span> This provider returns AI-generated answers without traditional search results.
+    </div>
+
+    <!-- No Results -->
+    <div x-show="!loading && searched && results.length === 0 && !answer && !error" class="no-results">
+      No results found. Try a different query or provider.
+    </div>
+
+    <!-- Initial State -->
+    <div x-show="!loading && !searched" class="no-results">
+      Enter a search query above to get started.
+    </div>
   </div>
+
+  <script>
+    function searchApp() {
+      return {
+        query: '',
+        provider: 'compound',
+        includeAnswer: true,
+        loading: false,
+        searched: false,
+        results: [],
+        answer: '',
+        error: '',
+
+        async executeSearch() {
+          if (!this.query.trim()) return;
+
+          this.loading = true;
+          this.error = '';
+          this.results = [];
+          this.answer = '';
+          this.searched = false;
+
+          try {
+            const response = await fetch('/api/search', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                query: this.query,
+                provider: this.provider,
+                maxResults: 30,
+                includeAnswer: this.includeAnswer,
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error('Search request failed: ' + response.statusText);
+            }
+
+            const data = await response.json();
+
+            if (!data.success) {
+              this.error = data.error || 'Search failed';
+            } else {
+              this.results = data.results || [];
+              this.answer = data.answer || '';
+              this.searched = true;
+            }
+          } catch (err) {
+            this.error = 'Error: ' + err.message;
+            console.error('Search error:', err);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        formatDate(dateString) {
+          try {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(hours / 24);
+
+            if (hours < 1) return 'just now';
+            if (hours < 24) return hours + ' hour' + (hours !== 1 ? 's' : '') + ' ago';
+            if (days < 7) return days + ' day' + (days !== 1 ? 's' : '') + ' ago';
+            
+            return date.toLocaleDateString();
+          } catch (e) {
+            return dateString;
+          }
+        },
+
+        getDomain(url) {
+          try {
+            const urlObj = new URL(url);
+            return urlObj.hostname.replace('www.', '');
+          } catch (e) {
+            return url;
+          }
+        },
+
+        formatAnswer(answer) {
+          if (!answer) return '';
+          // Handle if answer is an object
+          if (typeof answer === 'object') {
+            return JSON.stringify(answer, null, 2);
+          }
+          
+          let html = String(answer);
+          
+          // Simple markdown-like formatting
+          // Headers
+          html = html.replace(/^### (.*$)/gm, '<h3 style="font-size: 15px; font-weight: bold; margin: 15px 0 8px 0;">$1</h3>');
+          html = html.replace(/^## (.*$)/gm, '<h2 style="font-size: 16px; font-weight: bold; margin: 18px 0 10px 0;">$1</h2>');
+          html = html.replace(/^# (.*$)/gm, '<h1 style="font-size: 17px; font-weight: bold; margin: 20px 0 12px 0;">$1</h1>');
+          
+          // Bold
+          html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          
+          // Italic
+          html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+          
+          // Lists
+          html = html.replace(/^- (.*$)/gm, '<li style="margin-left: 20px;">$1</li>');
+          html = html.replace(/^(\d+)\. (.*$)/gm, '<li style="margin-left: 20px; list-style-type: decimal;">$2</li>');
+          
+          // Links
+          html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color: #ff6600; text-decoration: underline;">$1</a>');
+          
+          // Line breaks
+          html = html.replace(/\n\n/g, '<br><br>');
+          html = html.replace(/\n/g, '<br>');
+          
+          // Tables (simple support)
+          html = html.replace(/\|/g, ' | ');
+          
+          return html;
+        }
+      };
+    }
+  </script>
 </body>
 </html>
