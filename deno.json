@@ -1,6 +1,8 @@
 {
   "tasks": {
-    "serve": "deno serve --port 9990 --allow-sys --allow-read --allow-import --allow-env --allow-write --allow-net --reload=https://esm.town ./main.js",
+    "serve": "deno serve --port 9990 --allow-sys --allow-read --allow-import --allow-env --allow-write --allow-net --reload=https://esm.town ./platforms/valtown/main.js",
+    "cron": "deno run --allow-env --allow-net --allow-read --allow-write ./platforms/valtown/cron.js",
+    "test:harness": "deno run --allow-env --allow-net --allow-read --allow-write ./shared/test.js",
     "search": "deno run --allow-env --allow-net --allow-read ./core/search/groq-compound/test.js",
     "search:tavily": "deno run --allow-env --allow-net --allow-read ./core/search/tavily/test.js",
     "search:jina": "deno run --allow-env --allow-net --allow-read ./core/search/jina/test.js",
