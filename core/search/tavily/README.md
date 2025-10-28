@@ -78,7 +78,42 @@ const result = await searchWithTavily("Latest tech news", {
   includeImages: true,           // Include images in results
   includeRawContent: false,      // Include raw HTML content
   includeDomains: ["techcrunch.com", "theverge.com"],  // Specific domains
-  excludeDomains: ["example.com"]  // Domains to exclude
+  excludeDomains: ["example.com"],  // Domains to exclude
+  time_range: "month",           // Filter by time: "day"/"d", "week"/"w", "month"/"m", "year"/"y"
+  start_date: "2025-09-27",      // Filter results after this date (YYYY-MM-DD)
+  end_date: "2025-10-27"         // Filter results before this date (YYYY-MM-DD)
+});
+```
+
+### Date Filtering for Academic Papers
+
+When searching for recent academic papers, you can attempt date filtering, but be aware of limitations:
+
+**⚠️ Important Limitations:**
+1. You cannot use both `time_range` and `start_date`/`end_date` together. Choose one approach.
+2. **Date filtering does NOT work reliably for bioRxiv/medRxiv preprints.** Testing shows that Tavily returns papers from months or years outside the requested date range.
+3. For reliable date filtering of preprints, use the bioRxiv API directly (https://api.biorxiv.org/)
+
+```javascript
+import { searchTavilyResults } from './core/search/tavily/tavily.js';
+
+// Option 1: Use time_range for relative dates (simpler)
+const recentPapers = await searchTavilyResults("phage therapy", {
+  time_range: "month",           // Last month
+  searchDepth: "advanced",
+  includeDomains: ["biorxiv.org", "medrxiv.org"]
+});
+
+// Option 2: Use exact date ranges (more precise control)
+const today = new Date();
+const oneMonthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+const papers = await searchTavilyResults("bacteriophage research", {
+  start_date: oneMonthAgo.toISOString().split('T')[0],  // YYYY-MM-DD
+  end_date: today.toISOString().split('T')[0],
+  searchDepth: "advanced",
+  includeDomains: ["biorxiv.org", "medrxiv.org", "pubmed.ncbi.nlm.nih.gov"]
+  // Don't include time_range when using start_date/end_date
 });
 ```
 
@@ -111,6 +146,9 @@ Main function that returns the full Tavily API response object.
   - `includeRawContent` (boolean): Include raw HTML content
   - `includeDomains` (array): List of domains to include
   - `excludeDomains` (array): List of domains to exclude
+  - `time_range` (string): Filter by relative time: "day"/"d", "week"/"w", "month"/"m", "year"/"y"
+  - `start_date` (string): Filter results after this date (format: YYYY-MM-DD)
+  - `end_date` (string): Filter results before this date (format: YYYY-MM-DD)
 
 **Returns:** Promise<Object> - Full response including:
 - `answer` - AI-generated answer

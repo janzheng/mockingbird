@@ -2,6 +2,60 @@
 
 Quick reference for all search, scrape, and compound query commands in Mockingbird.
 
+## Experiment Scripts
+
+For detailed documentation on experiments, see [experiments/README.md](./experiments/README.md).
+
+### Phage Therapy Triple Hybrid Search (Recommended)
+Comprehensive search combining PubMed, bioRxiv/medRxiv API, and Exa for maximum coverage.
+
+```bash
+# Default: last 30 days
+deno task ex:triple-hybrid
+
+# Custom timeframe (e.g., last 60 days)
+deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-triple-hybrid.js 60
+
+# Last 7 days for very recent papers
+deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-triple-hybrid.js 7
+```
+
+**Strategy:**
+- PubMed: Indexed biomedical papers with complete metadata
+- bioRxiv/medRxiv API: Direct preprint access with category filtering
+- Exa: Neural + keyword search for broader coverage
+- Smart deduplication by DOI and title similarity
+- 100% DOI coverage with complete metadata
+
+**Output:** Papers organized by source (PubMed, bioRxiv/medRxiv, Exa) with complete metadata.
+
+---
+
+### Multi-Topic Phage Research Search
+Searches 12 phage-related topics across all three sources for broad coverage.
+
+```bash
+# Default: last 7 days
+deno task ex:multi-topic
+
+# Custom timeframe (e.g., last 14 days)
+deno run --allow-env --allow-net --allow-read ./experiments/phage-multi-topic-search.js 14
+```
+
+**Topics covered:**
+- Phage therapy, bioinformatics, host interactions
+- Phage biology, resistance, defense, engineering
+- Phage-antibiotic synergy, phageome, virome
+- Prophage, phage-immune interactions
+
+**Strategy:**
+- ~5 papers per source per topic
+- Topic-specific filtering with appropriate bioRxiv categories
+- Each paper tagged with [source, type, topic]
+- Results organized by topic and source
+
+**Output:** Comprehensive topic-organized listing with ~60-180 papers total.
+
 ## Search Commands
 
 ### Tavily Search
@@ -16,6 +70,18 @@ deno task search:tavily "Latest AI developments"
 
 # Location-based queries
 deno task search:tavily "Best restaurants in Tokyo"
+```
+
+**Test Tavily Date Filtering for Academic Papers:**
+```bash
+# Test whether Tavily's date filters work for bioRxiv/medRxiv preprints
+deno run --allow-net --allow-env --allow-read core/search/tavily/test-date-filter.js
+
+# This test will:
+# - Search for papers with a 30-day date filter
+# - Parse actual publication dates from DOIs
+# - Show which papers fall outside the requested date range
+# - Determine if Tavily's date filtering is working correctly
 ```
 
 ### Jina Search

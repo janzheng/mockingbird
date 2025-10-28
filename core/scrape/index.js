@@ -22,3 +22,10 @@ export {
   batchExtract,
 } from './tavily/tavily-extract.js';
 
+// HTML Metadata Extraction
+export {
+  detectUrlType,
+  fetchAcademicMetadata,
+  fetchSocialMetadata,
+  fetchMetadataFromUrl,
+} from './metadata.js';

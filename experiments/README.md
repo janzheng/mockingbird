@@ -1,340 +1,294 @@
 # Experiments
 
-This folder contains experimental scripts that use Groq Compound search for various research and discovery tasks.
+This folder contains experimental scripts for research and discovery tasks using various search APIs.
 
-## 🎯 Quick Start: Best Approach for Academic Papers
+## 🎯 Available Experiments
 
-For the most accurate results, use:
-```bash
-deno task ex:phage-therapy-urls-only
-```
+### 🏆 Phage Therapy Triple Hybrid Search (RECOMMENDED)
 
-This uses Groq only for URL discovery, then fetches 100% accurate metadata directly from webpages. See `SOLUTION.md` for why this approach is superior.
+**File:** `phage-therapy-triple-hybrid.js`
 
-## Running Experiments
-
-Each experiment can be run using the deno task command:
-
-```bash
-deno task ex:experimentname
-```
-
-## Available Experiments
-
-### 🏆 Phage Therapy Papers - URLs Only (RECOMMENDED) (`ex:phage-therapy-urls-only`)
-
-**⭐ BEST ACCURACY:** Uses Groq only for URL discovery, then fetches real metadata from webpages.
+**⭐ BEST FOR COMPREHENSIVE RESEARCH:** Combines three powerful sources for maximum coverage of phage therapy papers.
 
 **Run with:**
 ```bash
-deno task ex:phage-therapy-urls-only
+# Default: last 30 days
+deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-triple-hybrid.js
+
+# Custom timeframe (e.g., last 60 days)
+deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-triple-hybrid.js 60
+
+# Last 7 days for very recent papers
+deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-triple-hybrid.js 7
 ```
 
-**Why this is best:**
-- ✅ **100% accurate metadata** - pulled directly from webpage HTML meta tags
-- ✅ **No hallucinations** - LLM only finds URLs, not metadata
-- ✅ **Complete information** - gets full titles, authors, abstracts, DOIs
-- ✅ **Verifiable** - every data point comes from the actual paper's webpage
+**Strategy:**
+1. **PubMed Search** - High-quality indexed biomedical papers via E-utilities API
+2. **bioRxiv/medRxiv API** - Direct access to preprints with microbiology category filtering
+3. **Exa Search** - Other academic sources using auto search (neural + keyword)
+4. **Smart Deduplication** - Removes duplicates by DOI and title similarity
+5. **Source Attribution** - Clear labels showing where each paper was found
 
-**What it does:**
-1. Uses Groq Compound to search and find paper URLs (domain-restricted)
-2. Fetches each webpage directly
-3. Extracts citation metadata from HTML meta tags:
-   - `citation_title` - Full, accurate titles
-   - `citation_author` - All authors
-   - `citation_publication_date` - Real publication dates
-   - `citation_journal_title` - Correct journal names
-   - `citation_doi` - Verified DOIs
-   - `citation_abstract` - Actual abstracts
+**Why this approach is comprehensive:**
+- ✅ **PubMed coverage** - All indexed biomedical papers with complete structured metadata
+- ✅ **Preprint discovery** - Finds latest preprints from bioRxiv/medRxiv before PubMed indexing
+- ✅ **Broader coverage** - Exa finds papers from Europe PMC, PLOS, ASM, MDPI, etc.
+- ✅ **100% DOI coverage** - All papers have verified DOIs
+- ✅ **Complete metadata** - Full author lists, abstracts, dates, journals
+- ✅ **Intelligent filtering** - Phage-specific content filtering, excludes collection pages
+- ✅ **Smart deduplication** - Best metadata preserved when duplicates found
 
-**Output includes:**
-- Full untruncated titles
-- Author lists (first 5 + "et al.")
-- Accurate dates in readable format
-- Correct journal names
-- DOIs with direct links
-- Abstracts (first 300 characters)
+**Output sections:**
+- **FROM PUBMED** - Complete metadata from PubMed's structured API
+- **FROM BIORXIV/MEDRXIV** - Preprints with category labels
+- **FROM EXA - OTHER SOURCES** - Papers from diverse academic publishers
 
 **Use this for:**
-- Academic citations
-- Research reports
-- Any situation where accuracy is critical
-- When you need complete, verifiable information
+- Literature reviews requiring comprehensive coverage
+- Finding the newest research (including preprints)
+- When you need both peer-reviewed AND preprint papers
+- Identifying cutting-edge research before PubMed indexing
+- Academic research requiring complete metadata
+
+**Environment required:**
+```
+EXA_API_KEY=your_exa_key    # Required for Exa search
+```
 
 ---
 
-### Phage Therapy Papers - Basic (`ex:phage-therapy`)
+### 🔬 Multi-Topic Phage Research Search
 
-**⚠️ Note:** This basic version may produce hallucinations. Use the improved versions below for better accuracy.
+**File:** `phage-multi-topic-search.js`
 
-Searches for recent phage therapy (bacteriophage therapy) academic research papers published in reputable journals within the last 30 days.
+**⭐ BEST FOR BROAD COVERAGE:** Searches 12 different phage-related topics across all three sources.
 
 **Run with:**
 ```bash
-deno task ex:phage-therapy
+# Default: last 7 days
+deno run --allow-env --allow-net --allow-read ./experiments/phage-multi-topic-search.js
+
+# Custom timeframe (e.g., last 14 days)
+deno run --allow-env --allow-net --allow-read ./experiments/phage-multi-topic-search.js 14
 ```
 
-**What it does:**
-- Searches multiple academic databases and journal sites
-- Filters for papers published in the last 30 days
-- Focuses on reputable journals (Nature, Science, The Lancet, mBio, Viruses, Antibiotics, etc.)
-- Returns structured information about each paper
+**Strategy:**
+1. Searches **12 phage research topics** systematically
+2. For each topic: PubMed + bioRxiv/medRxiv API + Exa
+3. Targets ~5 papers per source per topic
+4. Tags each paper: `[source, type, topic]`
+5. Smart deduplication across all papers
+6. Results organized by topic
 
-**Limitations:** May hallucinate papers or citations without verification.
+**Topics covered:**
+- 🧬 Phage therapy
+- 💻 Phage bioinformatics  
+- 🔗 Phage-host interactions
+- 🧪 Phage biology
+- 🛡️ Phage resistance
+- ⚔️ Phage defense
+- 🔧 Phage engineering
+- 💊 Phage-antibiotic synergy
+- 🌍 Phageome
+- 🦠 Virome
+- 🧬 Prophage
+- 🩺 Phage-immune interactions
+
+**Why this approach is powerful:**
+- ✅ **Multi-topic coverage** - Captures diverse aspects of phage research
+- ✅ **Topic-specific filtering** - Customized search terms and filters per topic
+- ✅ **Comprehensive tagging** - Each paper tagged with source, type, and topic
+- ✅ **Smart category mapping** - Uses appropriate bioRxiv categories per topic
+- ✅ **Focused timeframe** - Default 7-day window for very recent papers
+- ✅ **Complete metadata** - DOIs, authors, abstracts, dates, journals
+- ✅ **Organized output** - Results grouped by topic and source
+
+**Output structure:**
+```
+📚 TOPIC: "PHAGE THERAPY"
+  📊 From PubMed (5 papers)
+  📊 From bioRxiv/medRxiv (3 papers)
+  📊 From Exa (4 papers)
+
+📚 TOPIC: "PHAGE BIOINFORMATICS"
+  📊 From PubMed (4 papers)
+  📊 From bioRxiv/medRxiv (2 papers)
+  📊 From Exa (5 papers)
+  
+... (continues for all 12 topics)
+```
+
+**Use this for:**
+- Broad surveys of phage research landscape
+- Discovering research across multiple phage-related areas
+- Building comprehensive research databases
+- Tracking multiple research directions simultaneously
+- Finding papers at the intersection of multiple topics
+
+**Environment required:**
+```
+EXA_API_KEY=your_exa_key    # Required for Exa search
+```
 
 ---
 
-### Phage Therapy Papers - Improved (`ex:phage-therapy-improved`)
+## 📊 Comparison
 
-**Recommended:** This version implements anti-hallucination strategies.
+| Feature | Triple Hybrid | Multi-Topic |
+|---------|--------------|-------------|
+| **Topics** | Single topic (phage therapy) | 12 topics |
+| **Default timeframe** | 30 days | 7 days |
+| **Papers per search** | ~30-60 papers | ~60-180 papers |
+| **Best for** | Deep dive, comprehensive literature review | Broad survey, multiple topics |
+| **Output organization** | By source | By topic, then source |
+| **Speed** | Faster | Slower (more topics) |
+| **Coverage** | Deep | Wide |
 
-**Run with:**
-```bash
-deno task ex:phage-therapy-improved
-```
-
-**What it does:**
-- **Uses `search_settings`** to restrict searches to academic domains
-- **Two-step RAG approach:**
-  1. First step: Raw search for papers with strict factual requirements
-  2. Second step: Format results with verification markers
-- **Displays tool calls** to show what sources were actually accessed
-- **Marks unverified papers** that lack URLs or DOIs
-- **Lower temperature** (0.1) for factual accuracy
-
-**Anti-hallucination features:**
-- Domain restrictions to academic sources only
-- Explicit "do not make up papers" instructions
-- Two-pass verification with different prompts
-- Transparent marking of unverified information
+**Quick decision guide:**
+- 🎯 **Use Triple Hybrid** when you want comprehensive coverage of a single topic
+- 🌐 **Use Multi-Topic** when you want to survey multiple aspects of phage research
 
 ---
 
-### Phage Therapy Papers - Verified (`ex:phage-therapy-verified`)
+## 🛠️ Technical Details
 
-**Most Reliable:** This version includes URL verification.
+### Data Sources
 
-**Run with:**
-```bash
-deno task ex:phage-therapy-verified
-```
+Both experiments use the same three data sources:
 
-**What it does:**
-- Searches with domain restrictions
-- **Automatically extracts URLs and DOIs** from results
-- **Verifies each URL** by making HEAD requests
-- Reports which URLs are valid vs inaccessible
-- Creates a verified summary with confidence markers
-- Provides direct PubMed search syntax for manual verification
+1. **PubMed (via E-utilities API)**
+   - Free, no API key required
+   - High-quality indexed biomedical literature
+   - Complete structured metadata
+   - Precise date filtering
+   - Direct PMIDs and URLs
 
-**Anti-hallucination features:**
-- All features from "improved" version
-- Automatic URL extraction and verification
-- Clear distinction between verified and unverified papers
-- Direct links for manual verification
-- Statistical reporting of verification results
+2. **bioRxiv/medRxiv (via REST API)**
+   - Free, no API key required
+   - Preprints before peer review
+   - Category filtering (microbiology, bioinformatics, etc.)
+   - Usually 1-2 days ahead of PubMed indexing
+   - Complete metadata including abstracts
 
----
+3. **Exa (via Exa API)**
+   - Requires API key (paid service)
+   - Neural + keyword hybrid search
+   - Broader journal coverage beyond biomedical
+   - Category filtering for "research paper"
+   - Text filtering for content requirements
 
-### Phage Therapy Debug (`ex:phage-therapy-debug`)
+### Metadata Extraction
 
-**For Debugging:** Traces raw search results vs formatted output.
+Papers include:
+- ✅ **Title** - Full, untruncated titles
+- ✅ **Authors** - Complete author lists
+- ✅ **Abstract** - Full abstracts when available
+- ✅ **DOI** - Digital Object Identifiers
+- ✅ **Journal/Platform** - Publication venue
+- ✅ **Date** - Publication or preprint date
+- ✅ **URL** - Direct link to paper
+- ✅ **Source** - Where the paper was found
+- ✅ **Tags** - Source, type, topic (multi-topic only)
 
-**Run with:**
-```bash
-deno task ex:phage-therapy-debug
-```
+### Deduplication Strategy
 
-**What it does:**
-- Shows **raw unformatted search results** from Groq
-- Shows **formatted version** with markdown
-- Displays **tool calls** made by Groq Compound
-- Performs **comparison analysis** to identify any discrepancies
-- Verifies URLs are accessible
+Both experiments use intelligent deduplication:
 
-**Use this when:**
-- You think the formatting is changing data
-- You want to see what Groq actually found vs what it formatted
-- You need to debug incorrect information
+1. **Priority 1: DOI matching** - Exact DOI matches are considered duplicates
+2. **Priority 2: Title similarity** - >90% title similarity considered duplicates
+3. **Source preference** - PubMed metadata preferred when duplicates found
+4. **Tag preservation** - Multi-topic search preserves all relevant topic tags
 
----
+### Quality Filtering
 
-### URL Content Verification (`ex:verify-urls`)
-
-**For Deep Verification:** Fetches actual webpage content and compares metadata.
-
-**Run with:**
-```bash
-deno task ex:verify-urls
-```
-
-**What it does:**
-- Fetches the actual HTML of papers found by Groq
-- Extracts metadata from webpage (citation_title, citation_date, etc.)
-- Compares **claimed metadata** vs **actual webpage metadata**
-- Shows exactly where discrepancies occur
-
-**Use this when:**
-- You need to verify if dates/journals are actually correct
-- You suspect Groq is returning wrong metadata
-- You need to confirm paper details before citing
-
-**Recent findings:** See `DEBUG_FINDINGS.md` for comprehensive test results showing that:
-- ✅ Dates are accurate (October 2025 papers verified)
-- ✅ Journals are accurate
-- ✅ URLs are valid
-- ⚠️ Some titles may be truncated/simplified
+Papers must meet these criteria:
+- ✅ Contains "phage" or "bacteriophage" in title or abstract
+- ✅ Has a valid DOI
+- ✅ Not a collection page or table of contents
+- ✅ Within specified date range
+- ✅ Excludes obvious false positives (e.g., macrophage-only papers)
 
 ---
 
-### Inspect Compound Output (`ex:inspect-compound`)
+## 🚀 Getting Started
 
-**For Debugging Groq Compound:** Shows the complete raw output from Groq.
+### Prerequisites
 
-**Run with:**
-```bash
-deno task ex:inspect-compound
-# Or with custom query:
-deno task ex:inspect-compound "your custom search query"
-```
-
-**What it shows:**
-- **Full raw JSON** - Complete unprocessed response
-- **Response structure** - All top-level keys and types
-- **Main content** - What users typically see
-- **Message details** - Role, content length, etc.
-- **Executed tools** - Which tools Groq actually used (search, visit, etc.)
-  - Tool arguments (search queries, URLs visited)
-  - Search results with scores
-  - Output from each tool
-- **Usage statistics** - Token counts and cost estimates
-- **Usage breakdown by model** - Shows which models (Llama 4 Scout, GPT-OSS-120B) handled each step
-- **Metadata** - Model, timestamps, finish reasons
-- **Analysis** - What's present vs missing
-
-**Use this when:**
-- You want to see EVERYTHING Groq returns
-- Debugging why results are unexpected
-- Understanding which tools were actually called
-- Checking which models were used
-- Verifying token usage and costs
-
-## Anti-Hallucination Strategies
-
-Based on research and testing, here are proven strategies to reduce hallucinations in Groq Compound searches:
-
-### 1. Use `search_settings` to Restrict Domains
-
-Limit searches to reputable sources:
-
-```javascript
-search_settings: {
-  include_domains: [
-    "pubmed.ncbi.nlm.nih.gov",
-    "nature.com",
-    "science.org",
-    "*.edu"  // Academic institutions
-  ]
-}
-```
-
-### 2. Two-Step RAG (Retrieval-Augmented Generation)
-
-Separate retrieval from formatting:
-
-```javascript
-// Step 1: Retrieve with strict "don't make up" instructions
-const searchResults = await searchWithCompound(query, {
-  system: "Find actual papers. Do not make up information.",
-  temperature: 0.1
-});
-
-// Step 2: Format with verification requirements  
-const formatted = await searchWithCompound(`Format these results: ${searchResults}`, {
-  system: "Mark unverified items clearly. Be honest about limitations.",
-  temperature: 0.1
-});
-```
-
-### 3. Lower Temperature for Factual Tasks
-
-- Use 0.1-0.3 for research and factual retrieval
-- Use 0.7-0.9 only for creative tasks
-
-### 4. Extract and Verify URLs/DOIs
-
-```javascript
-// Extract URLs from LLM response
-const urls = text.match(/https?:\/\/[^\s\)]+/g);
-
-// Verify each URL
-for (const url of urls) {
-  const response = await fetch(url, { method: 'HEAD' });
-  console.log(url, response.ok ? '✅' : '❌');
-}
-```
-
-### 5. Explicit "Do Not Hallucinate" Instructions
-
-Be very explicit in system prompts:
-- "Do NOT make up papers or citations"
-- "Only include information from actual search results"
-- "If you cannot find something, say so explicitly"
-- "Include source URLs for everything"
-
-### 6. Display Tool Calls
-
-Check what tools were actually used:
-
-```javascript
-if (result.choices[0]?.message?.tool_calls) {
-  console.log("Tools used:", result.choices[0].message.tool_calls);
-}
-```
-
-### 7. Mark Unverified Information
-
-Always distinguish between verified and unverified:
-- Papers with URLs: ✅ Verified
-- Papers without URLs: ⚠️ [NEEDS VERIFICATION]
-- Inaccessible URLs: ❌ [BROKEN LINK]
-
-### 8. Provide Manual Verification Methods
-
-Always include fallback verification:
-- PubMed search syntax
-- Direct links to databases
-- Alternative search strategies
-
-## Creating New Experiments
-
-1. Create a new `.js` file in this directory
-2. Import the compound search module:
-   ```javascript
-   import "jsr:@std/dotenv/load";
-   import { searchWithCompound } from '../core/search/compound.js';
+1. **Deno installed**
+   ```bash
+   # macOS/Linux
+   curl -fsSL https://deno.land/x/install/install.sh | sh
+   
+   # Or with Homebrew
+   brew install deno
    ```
-3. Write your experiment logic
-4. Add a new task to `deno.json`:
-   ```json
-   "ex:yourexperiment": "deno run --allow-env --allow-net --allow-read ./experiments/yourexperiment.js"
+
+2. **Exa API key**
+   - Sign up at [exa.ai](https://exa.ai)
+   - Get your API key
+   - Add to `.env` file in project root
+
+3. **Environment setup**
+   Create a `.env` file in the project root:
+   ```bash
+   EXA_API_KEY=your_exa_api_key_here
    ```
-5. **Consider implementing anti-hallucination strategies** from the section above
 
-## Tips
+### Running Your First Search
 
-- Use lower temperatures (0.1-0.3) for factual research tasks
-- Use higher temperatures (0.7-0.9) for creative tasks
-- Provide detailed system prompts to guide the search
-- Use `max_tokens` to control response length
-- Check `result.choices[0].message.tool_calls` to see which tools were used
-- Groq Compound has access to web search, code execution, browser automation, and more
-
-## Environment Requirements
-
-Make sure you have a `GROQ_API_KEY` in your `.env` file:
-
+**For single-topic comprehensive search:**
+```bash
+deno run --allow-env --allow-net --allow-read ./experiments/phage-therapy-triple-hybrid.js
 ```
-GROQ_API_KEY=your_api_key_here
+
+**For multi-topic survey:**
+```bash
+deno run --allow-env --allow-net --allow-read ./experiments/phage-multi-topic-search.js
 ```
+
+### Cost Estimates
+
+**Triple Hybrid (per search):**
+- PubMed: Free
+- bioRxiv/medRxiv: Free
+- Exa: ~$0.01-0.02 (50 results)
+- **Total: ~$0.01-0.02 per search**
+
+**Multi-Topic (per search):**
+- PubMed: Free
+- bioRxiv/medRxiv: Free
+- Exa: ~$0.12-0.24 (12 topics × 30 results each)
+- **Total: ~$0.12-0.24 per search**
+
+---
+
+## 📝 Tips
+
+- **Start with shorter timeframes** (7 days) to test before running longer searches
+- **PubMed/bioRxiv are free** - only Exa requires paid API
+- **Check API quotas** before large-scale searches
+- **Use delays** between requests to respect rate limits (already built-in)
+- **Review output sections** to understand what each source found
+- **Save results** - redirect output to a file with `> results.txt`
+
+---
+
+## 🔮 Future Enhancements
+
+Possible additions to these experiments:
+- Additional topic areas for multi-topic search
+- More preprint servers (arXiv, Research Square)
+- Export to structured formats (JSON, CSV, BibTeX)
+- Citation network analysis
+- Automatic email digests
+- Integration with reference managers
+
+---
+
+## 📚 Related Documentation
+
+- See `core/search/README.md` for search module documentation
+- See `core/scrape/README.md` for metadata extraction details
+- See `SOLUTION.md` for additional search strategies
+- See `old-experiments/` folder for archived experimental approaches
 

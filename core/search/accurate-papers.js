@@ -20,15 +20,29 @@ export async function fetchMetadataFromUrl(url) {
     const html = await response.text();
     const metadata = { url };
     
-    // Extract title
-    const titleMatch = html.match(/<meta name="citation_title" content="([^"]+)"/i) ||
-                       html.match(/<meta property="og:title" content="([^"]+)"/i) ||
-                       html.match(/<meta name="dc\.title" content="([^"]+)"/i) ||
-                       html.match(/<title>([^<]+)<\/title>/i);
-    if (titleMatch) {
-      metadata.title = titleMatch[1]
-        .replace(/\s*\|\s*.*$/, '')  // Remove "| Journal Name" suffix
-        .replace(/\s*-\s*.*$/, '')    // Remove "- Site Name" suffix  
+    // Extract title (prioritize citation_title as it's cleanest)
+    const citationTitle = html.match(/<meta name="citation_title" content="([^"]+)"/i);
+    const ogTitle = html.match(/<meta property="og:title" content="([^"]+)"/i);
+    const dcTitle = html.match(/<meta name="dc\.title" content="([^"]+)"/i);
+    const htmlTitle = html.match(/<title>([^<]+)<\/title>/i);
+    
+    if (citationTitle) {
+      // citation_title is already clean, no cleanup needed
+      metadata.title = citationTitle[1].trim();
+    } else if (dcTitle) {
+      // dc.title is usually clean too
+      metadata.title = dcTitle[1].trim();
+    } else if (ogTitle) {
+      // og:title might have suffixes, clean them up
+      metadata.title = ogTitle[1]
+        .replace(/\s*\|\s*.*$/, '')  // Remove "| Site Name"
+        .replace(/\s*[-–—]\s*[A-Z].*$/, '')  // Remove "- Site Name" (only if followed by capital letter)
+        .trim();
+    } else if (htmlTitle) {
+      // <title> tags often have suffixes
+      metadata.title = htmlTitle[1]
+        .replace(/\s*\|\s*.*$/, '')  // Remove "| Site Name"
+        .replace(/\s*[-–—]\s*[A-Z].*$/, '')  // Remove "- Site Name" (only if followed by capital letter)
         .trim();
     }
     

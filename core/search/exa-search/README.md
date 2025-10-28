@@ -91,7 +91,8 @@ import {
   searchResearchPapers,
   searchNews,
   searchCompanies,
-  searchGitHub
+  searchGitHub,
+  searchLinkedInPosts
 } from './core/search/exa-search/exa-search.js';
 
 // Research papers
@@ -105,6 +106,16 @@ const companies = await searchCompanies("AI startups");
 
 // GitHub repositories
 const repos = await searchGitHub("deno framework");
+
+// LinkedIn posts
+const posts = await searchLinkedInPosts("biotech innovation", {
+  numResults: 10,
+  text: true,
+  highlights: {
+    numSentences: 2,
+    highlightsPerUrl: 3
+  }
+});
 ```
 
 ### Advanced Options
@@ -155,16 +166,63 @@ result.results.forEach(item => {
 });
 ```
 
+## LinkedIn Posts Search
+
+Search for LinkedIn posts (not profiles) to find discussions, insights, and updates from people on LinkedIn:
+
+```javascript
+import { searchLinkedInPosts } from './core/search/exa-search/exa-search.js';
+
+// Basic search
+const posts = await searchLinkedInPosts("phage therapy clinical trials", {
+  numResults: 10,
+  text: true
+});
+
+// With highlights
+const posts = await searchLinkedInPosts("biotech innovation", {
+  numResults: 5,
+  highlights: {
+    numSentences: 2,
+    highlightsPerUrl: 3
+  }
+});
+
+// Recent posts only (last 30 days)
+const thirtyDaysAgo = new Date();
+thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+const recentPosts = await searchLinkedInPosts("AI breakthrough", {
+  startPublishedDate: thirtyDaysAgo.toISOString(),
+  numResults: 10
+});
+
+// Keyword search (exact matching)
+const posts = await searchLinkedInPosts("CRISPR gene editing", {
+  type: "keyword",  // Use keyword instead of neural
+  numResults: 5
+});
+```
+
+**Tips for LinkedIn Posts:**
+- Uses neural search by default for better semantic matching
+- Can search by date range to find recent discussions
+- Get full text content or just highlights
+- Author information is often included in results
+
 ## CLI Testing
 
 ```bash
 # Test Exa Search from command line
-deno task search:exa-search "your query here"
+deno task search:exa "your query here"
+
+# Test LinkedIn posts search
+deno task search:linkedin
 
 # Examples
-deno task search:exa-search "Latest research in LLMs"
-deno task search:exa-search "Best practices for Deno"
-deno task search:exa-search "TypeScript design patterns"
+deno task search:exa "Latest research in LLMs"
+deno task search:exa "Best practices for Deno"
+deno task search:exa "TypeScript design patterns"
 ```
 
 ## Available Functions
@@ -246,6 +304,7 @@ Fast search (streamlined versions).
 - `searchNews(query, options)`
 - `searchCompanies(query, options)`
 - `searchGitHub(query, options)`
+- `searchLinkedInPosts(query, options)`
 
 All return Promise<Object>
 

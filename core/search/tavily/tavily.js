@@ -14,6 +14,9 @@ import { tavily } from "npm:@tavily/core";
  * @param {Array<string>} options.includeRawContent - Include raw HTML content
  * @param {Array<string>} options.includeDomains - List of domains to include
  * @param {Array<string>} options.excludeDomains - List of domains to exclude
+ * @param {string} options.time_range - Filter by time: "day"/"d", "week"/"w", "month"/"m", "year"/"y"
+ * @param {string} options.start_date - Filter results after this date (format: YYYY-MM-DD)
+ * @param {string} options.end_date - Filter results before this date (format: YYYY-MM-DD)
  * @returns {Promise<Object>} - Full response object from Tavily API
  */
 export async function searchWithTavily(query, options = {}) {
@@ -32,6 +35,9 @@ export async function searchWithTavily(query, options = {}) {
     ...(options.includeRawContent !== undefined && { includeRawContent: options.includeRawContent }),
     ...(options.includeDomains !== undefined && { includeDomains: options.includeDomains }),
     ...(options.excludeDomains !== undefined && { excludeDomains: options.excludeDomains }),
+    ...(options.time_range !== undefined && { time_range: options.time_range }),
+    ...(options.start_date !== undefined && { start_date: options.start_date }),
+    ...(options.end_date !== undefined && { end_date: options.end_date }),
   };
 
   try {

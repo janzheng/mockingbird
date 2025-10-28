@@ -47,5 +47,6 @@ export {
   searchNews,
   searchCompanies,
   searchGitHub,
+  searchLinkedInPosts,
 } from './exa-search/exa-search.js';
 

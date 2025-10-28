@@ -122,26 +122,40 @@ Abstract: The rapid emergence of antibiotic-resistant bacteria requires
 
 ## Implementation
 
-The experiment `ex:phage-therapy-urls-only` implements this approach:
+The current experiments implement this approach for academic paper searches:
 
+### Triple Hybrid Search
 ```bash
-deno task ex:phage-therapy-urls-only
+deno task ex:triple-hybrid
 ```
 
-### What it does:
-1. Uses Groq Compound to search for URLs (with domain restrictions)
-2. Extracts unique URLs from response
-3. For each URL:
-   - Fetches the HTML
+Combines three sources (PubMed, bioRxiv/medRxiv, Exa) and uses direct metadata extraction:
+- PubMed: Structured API with verified metadata
+- bioRxiv/medRxiv: Direct API with complete metadata
+- Exa: Finds URLs, then scrapes metadata from HTML
+
+### Multi-Topic Search
+```bash
+deno task ex:multi-topic
+```
+
+Searches 12 phage topics across all three sources, using the same metadata extraction approach.
+
+### What they do:
+1. Search for papers using APIs or Exa (for URL discovery)
+2. For Exa results:
+   - Fetches each paper's HTML
    - Parses `citation_*` meta tags
    - Extracts authors, title, date, journal, DOI, abstract
-   - Formats nicely
-4. Displays complete, accurate results
+3. For PubMed/bioRxiv: Uses their structured APIs directly
+4. Smart deduplication by DOI and title similarity
+5. Displays complete, accurate results organized by source
 
-### Token usage:
-- Much lower! Only ~66k tokens vs ~230k+ for full metadata extraction
-- More cost-effective
-- Faster (parallel URL fetching)
+### Benefits:
+- PubMed/bioRxiv provide structured metadata directly (no scraping needed)
+- Exa URLs scraped for 100% accurate metadata
+- Much lower hallucination risk
+- Complete metadata (titles, authors, dates, abstracts, DOIs)
 
 ## Adapting for Other Use Cases
 

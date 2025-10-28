@@ -222,3 +222,19 @@ export async function searchGitHub(query, options = {}) {
   });
 }
 
+/**
+ * Search LinkedIn posts
+ * 
+ * @param {string} query - The search query
+ * @param {Object} options - Search options
+ * @returns {Promise<Object>} - Search results
+ */
+export async function searchLinkedInPosts(query, options = {}) {
+  return await searchAndContents(query, {
+    ...options,
+    includeDomains: ["linkedin.com"],
+    // Use neural search by default for better semantic matching
+    type: options.type || "neural",
+  });
+}
+
